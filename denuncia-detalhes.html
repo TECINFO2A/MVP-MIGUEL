@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    let sessaoAtual = null;
+    (function () {
+      try {
+        const stored = localStorage.getItem('paz-na-escola-theme');
+        const theme = stored === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <title>Detalhes da Ocorrência — Paz na Escola</title>
+  
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <a href="dashboard.html" class="btn-back" aria-label="Voltar para o painel de denúncias">
+      ← Voltar ao Dashboard
+    </a>
+
+    <header role="banner" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px;">
+      <div>
+        <h1 style="font-size: 1.6rem; color: var(--primary);">Detalhes do Caso</h1>
+        <p id="codigo-titulo" style="font-weight: 600; color: var(--text-muted); font-size: 1.1rem; margin-top: 2px;">PE-XXXXXX</p>
+      </div>
+      <div id="badge-prioridade-topo">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </header>
+
+    <main role="main">
+      <section class="card" id="details-card">
+        <div style="text-align: center; color: var(--text-muted); padding: 24px;">
+          Carregando informações do caso...
+        </div>
+      </section>
+
+      <!-- Formulário de Gestão de Caso -->
+      <section class="card" style="border-top: 6px solid var(--primary-light);">
+        <h2 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 16px;">Gerenciamento de Ações</h2>
+        
+        <form id="form-gestao">
+          <!-- Campo Alterar Prioridade -->
+          <div class="form-group">
+            <label for="alterar-prioridade" class="form-label">Alterar Prioridade</label>
+            <select id="alterar-prioridade" class="form-control">
+              <option value="Alta">Alta</option>
+              <option value="Média">Média</option>
+              <option value="Baixa">Baixa</option>
+            </select>
+          </div>
+
+          <!-- Campo Alterar Status -->
+          <div class="form-group">
+            <label for="alterar-status" class="form-label">Alterar Status da Ocorrência</label>
+            <select id="alterar-status" class="form-control">
+              <option value="Recebida">Recebida</option>
+              <option value="Em análise">Em análise</option>
+              <option value="Em acompanhamento">Em acompanhamento</option>
+              <option value="Concluída">Concluída</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            SALVAR ALTERAÇÕES
+          </button>
+        </form>
+      </section>
+      <section class="card timeline-management" aria-labelledby="updates-heading">
+        <h2 id="updates-heading">Linha do tempo</h2>
+        <div id="admin-timeline" class="admin-timeline"><p class="field-hint">Carregando atualizações...</p></div>
+        <form id="form-atualizacao" class="update-form">
+          <label for="mensagem-atualizacao" class="form-label">Nova atualização</label>
+          <textarea id="mensagem-atualizacao" class="form-control" maxlength="500" placeholder="Escreva uma observação para o acompanhamento..." required></textarea>
+          <button class="btn btn-secondary" type="submit">Registrar atualização</button>
+        </form>
+      </section>
+      <section id="service-rating" class="card service-rating" hidden aria-labelledby="rating-heading">
+        <p class="eyebrow">CASO ENCERRADO</p><h2 id="rating-heading">Como você avalia o atendimento?</h2>
+        <form id="form-avaliacao"><div class="rating-options" role="radiogroup" aria-label="Nota do atendimento"><label><input type="radio" name="nota" value="1" required>😞<span>1</span></label><label><input type="radio" name="nota" value="2">😐<span>2</span></label><label><input type="radio" name="nota" value="3">🙂<span>3</span></label><label><input type="radio" name="nota" value="4">😊<span>4</span></label><label><input type="radio" name="nota" value="5">😍<span>5</span></label></div><button class="btn btn-secondary" type="submit">Enviar avaliação</button></form>
+      </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+      <p>© 2026 Paz na Escola. Acesso Administrativo.</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/audio-service.js"></script>
+  
+  <script>
+    // Lógica contida diretamente na página para simplicidade do arquivo dashboard.js/auth.js
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Garante segurança
+      sessaoAtual = await window.verificarAutenticacao({ destino: 'denuncia-detalhes.html' });
+      if (!sessaoAtual) return;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+
+      if (!id) {
+        alert("ID da ocorrência inválido.");
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      await carregarDetalhes(id);
+
+      const form = document.getElementById('form-gestao');
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await salvarAlteracoes(id);
+        });
+      }
+      document.getElementById('form-atualizacao')?.addEventListener('submit', async event => {
+        event.preventDefault();
+        await registrarAtualizacao(id);
+      });
+      document.getElementById('form-avaliacao')?.addEventListener('submit', async event => {
+        event.preventDefault();
+        const nota = Number(new FormData(event.currentTarget).get('nota'));
+        const { error } = await window.supabaseClient.from('avaliacoes_atendimento').insert({ denuncia_id: id, aluno_id: sessaoAtual.user.id, nota });
+        if (error) { alert('Não foi possível registrar sua avaliação.'); return; }
+        event.currentTarget.innerHTML = '<p class="form-feedback success">Obrigado por avaliar o atendimento.</p>';
+      });
+    });
+
+    async function carregarDetalhes(id) {
+      const card = document.getElementById('details-card');
+      const codigoTitulo = document.getElementById('codigo-titulo');
+      const badgePrioridadeTopo = document.getElementById('badge-prioridade-topo');
+
+      try {
+        const perfil = sessaoAtual.user?.user_metadata?.perfil || (sessaoAtual.user?.id === 'u-gestor' ? 'gestor' : 'aluno');
+        let consulta = window.supabaseClient.from('denuncias').select('*').eq('id', id);
+        if (perfil !== 'gestor') consulta = consulta.eq('aluno_id', sessaoAtual.user.id);
+        const { data, error } = await consulta;
+
+        if (error || !data || data.length === 0) {
+          card.innerHTML = `<div style="text-align: center; color: var(--prioridade-alta);">Caso não encontrado no banco de dados.</div>`;
+          return;
+        }
+
+        const caso = data[0];
+
+        // Atualiza cabeçalhos
+        codigoTitulo.innerText = caso.codigo;
+        
+        const prioLower = caso.prioridade.toLowerCase().replace('é', 'e');
+        badgePrioridadeTopo.innerHTML = `<span class="badge badge-${prioLower}" style="font-size: 1rem; padding: 6px 14px;">${window.escapeHTML(caso.prioridade)}</span>`;
+
+        // Preenche campos do formulário
+        document.getElementById('alterar-prioridade').value = caso.prioridade;
+        document.getElementById('alterar-status').value = caso.status;
+
+        // Formata datas
+        let dataOcorrenciaFormatada = caso.data_ocorrencia;
+        if (caso.data_ocorrencia) {
+          const partes = caso.data_ocorrencia.split('-');
+          if (partes.length === 3) {
+            dataOcorrenciaFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+          }
+        }
+
+        const dataRegistro = new Date(caso.created_at).toLocaleString('pt-BR');
+
+        // Renderiza card de detalhes
+        card.innerHTML = `
+          <div class="detail-item">
+            <div class="detail-label">Tipo de Ocorrência</div>
+            <div class="detail-value" style="font-weight: 600; color: var(--primary);">${window.escapeHTML(caso.tipo)}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Quando Aconteceu</div>
+            <div class="detail-value">${dataOcorrenciaFormatada}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Onde Aconteceu</div>
+            <div class="detail-value">${window.escapeHTML(caso.local || 'Não especificado')}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Data de Registro no Sistema</div>
+            <div class="detail-value">${dataRegistro}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Privacidade do Relato</div>
+            <div class="detail-value">
+              ${caso.anonima ? '🔒 <strong>Anônimo</strong> (Identificação oculta)' : '👤 <strong>Identificado</strong>'}
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Descrição dos Fatos</div>
+            <div class="detail-value description">${window.escapeHTML(caso.descricao)}</div>
+          </div>
+          ${caso.audio_path ? '<div class="detail-item"><div class="detail-label">Áudio anexado</div><div id="audio-detail-player" class="detail-value">🎧 Carregando áudio privado...</div></div>' : ''}
+        `;
+
+        if (caso.audio_path && window.obterAudioPrivado) {
+          const audioUrl = await window.obterAudioPrivado(caso.audio_path);
+          const player = document.getElementById('audio-detail-player');
+          if (audioUrl && player) player.innerHTML = `<audio controls src="${window.escapeHTML(audioUrl)}" aria-label="Áudio anexado à denúncia"></audio>`;
+          else if (player) player.textContent = '🎧 Áudio disponível apenas no ambiente conectado.';
+        }
+
+        if (perfil !== 'gestor') document.querySelector('#form-gestao')?.closest('section')?.setAttribute('hidden', 'hidden');
+        if (perfil !== 'gestor') document.querySelector('#form-atualizacao')?.setAttribute('hidden', 'hidden');
+        if (perfil === 'aluno' && ['Resolvida', 'Concluída'].includes(caso.status)) document.getElementById('service-rating').hidden = false;
+        await carregarAtualizacoes(id);
+
+        window.announceAccessibility(`Carregados detalhes da ocorrência ${caso.codigo}. Ocorrência de ${caso.tipo}.`);
+
+      } catch (err) {
+        console.error(err);
+        card.innerHTML = `<div style="text-align: center; color: var(--prioridade-alta);">Falha ao carregar informações da ocorrência.</div>`;
+      }
+    }
+
+    async function salvarAlteracoes(id) {
+      const prioridade = document.getElementById('alterar-prioridade').value;
+      const status = document.getElementById('alterar-status').value;
+
+      try {
+        const { error } = await window.supabaseClient
+          .from('denuncias')
+          .update({ prioridade, status })
+          .eq('id', id);
+
+        if (error) {
+          console.error(error);
+          alert("Erro ao salvar alterações no banco de dados.");
+        } else {
+          await window.supabaseClient.from('denuncia_atualizacoes').insert({ denuncia_id: id, status, prioridade, mensagem: `Status atualizado para ${status} e prioridade para ${prioridade}.`, criado_por: sessaoAtual.user.id });
+          alert("Alterações salvas com sucesso!");
+          window.location.reload(); // Recarrega para refletir novos valores
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erro na conexão com o servidor ao salvar.");
+      }
+    }
+
+    async function carregarAtualizacoes(id) {
+      const container = document.getElementById('admin-timeline');
+      if (!container) return;
+      const { data, error } = await window.supabaseClient.from('denuncia_atualizacoes').select('*').eq('denuncia_id', id).order('criado_em', { ascending: true });
+      if (error) { container.innerHTML = '<p class="field-hint">Não foi possível carregar a linha do tempo.</p>'; return; }
+      container.innerHTML = (data || []).length ? data.map(item => `<article><time>${window.formatDate(item.criado_em)}</time><p>${window.escapeHTML(item.mensagem || 'Atualização registrada.')}</p><span>${window.escapeHTML(item.status || '')}</span></article>`).join('') : '<p class="field-hint">Nenhuma atualização adicional registrada.</p>';
+    }
+
+    async function registrarAtualizacao(id) {
+      const field = document.getElementById('mensagem-atualizacao');
+      const message = field.value.trim();
+      if (!message) return;
+      const { data: caso } = await window.supabaseClient.from('denuncias').select('status, prioridade').eq('id', id);
+      const atual = caso?.[0] || {};
+      const { error } = await window.supabaseClient.from('denuncia_atualizacoes').insert({ denuncia_id: id, status: atual.status, prioridade: atual.prioridade, mensagem: message, criado_por: sessaoAtual.user.id });
+      if (error) { alert('Não foi possível registrar a atualização.'); return; }
+      field.value = '';
+      await carregarAtualizacoes(id);
+      window.announceAccessibility('Atualização registrada com sucesso.');
+    }
+  </script>
+</body>
+</html>

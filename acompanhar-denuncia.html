@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>(function(){try{document.documentElement.setAttribute('data-theme',localStorage.getItem('paz-na-escola-theme')==='dark'?'dark':'light')}catch(e){}})();</script>
+  <title>Acompanhar denúncia — Paz na Escola</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container wide">
+    <a href="aluno-dashboard.html" class="btn-back">← Voltar ao meu espaço</a>
+    <header class="page-header"><p class="eyebrow">ACOMPANHAMENTO PRIVADO</p><h1 class="page-title">Acompanhar denúncia</h1><p class="page-intro">Digite o protocolo de um relato da sua conta. Informações pessoais e dados internos permanecem protegidos.</p></header>
+    <main>
+      <form id="form-acompanhar" class="form-card lookup-card">
+        <div id="tracking-feedback" class="form-feedback" role="alert" hidden></div>
+        <div class="form-group"><label for="codigo-acompanhamento" class="form-label">Código recebido após o envio</label><input id="codigo-acompanhamento" class="form-control protocol-input" type="text" maxlength="16" placeholder="PNE-2026-XXXXXX" autocomplete="off" required></div>
+        <button class="btn btn-primary" type="submit" id="btn-acompanhar">🔎 Consultar denúncia</button>
+      </form>
+      <section id="tracking-result" class="tracking-result" aria-live="polite" hidden></section>
+    </main>
+    <footer class="app-footer"><p>© 2026 Paz na Escola. Consulta privada e protegida.</p></footer>
+  </div>
+  <script src="js/supabase.js"></script><script src="js/app.js"></script><script src="js/auth.js"></script><script src="js/acompanhamento.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try { document.documentElement.setAttribute('data-theme', localStorage.getItem('paz-na-escola-theme') === 'dark' ? 'dark' : 'light'); } catch (error) {}
+    })();
+  </script>
+  <title>Painel do Gestor — Paz na Escola</title>
+  
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Layout Largo para o Dashboard -->
+  <div class="app-container wide">
+    
+    <!-- Cabeçalho Profissional -->
+    <header role="banner" class="dashboard-header">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>Dashboard</h1>
+          <p>Visão geral da segurança e do bem-estar escolar.</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <div class="header-controls">
+          <!-- Notificações -->
+          <button type="button" class="icon-button notification-button" aria-label="Notificações" title="Notificações">
+            🔔
+            <span id="notification-badge" class="notification-badge" style="display: none;">1</span>
+          </button>
+          
+          <!-- Menu do usuário -->
+          <div class="user-menu-container">
+            <button type="button" class="user-avatar" id="user-menu-trigger" aria-label="Menu do usuário" aria-haspopup="true">
+              <span id="user-initials">GS</span>
+            </button>
+            <div class="user-menu" id="user-menu">
+              <div class="user-menu-header">
+                <strong id="user-full-name">Gestor</strong>
+                <span id="user-email" style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">gestor@escola.com</span>
+              </div>
+              <button type="button" class="user-menu-item" onclick="window.realizarLogout()">
+                🚪 Sair do Painel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seletor de Período -->
+        <div class="period-selector">
+          <label for="period-select" style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Período:</label>
+          <select id="period-select" class="period-dropdown">
+            <option value="today">Hoje</option>
+            <option value="7">7 dias</option>
+            <option value="30" selected>30 dias</option>
+            <option value="all">Todos</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+      <!-- Indicadores Principais -->
+      <section class="dashboard-section" aria-label="Indicadores principais">
+        <div class="section-header">
+          <h2>Indicadores Principais</h2>
+        </div>
+        
+        <div class="metrics-grid">
+          <!-- 🛡️ Total de Relatos -->
+          <div class="metric-card">
+            <div class="metric-icon">🛡️</div>
+            <div class="metric-label">Total de Relatos</div>
+            <div id="metric-total-denuncias" class="metric-value">0</div>
+            <div class="metric-change" id="metric-change-total">
+              <span style="color: var(--prioridade-media);">vs período anterior</span>
+            </div>
+          </div>
+
+          <!-- 🟡 Em análise -->
+          <div class="metric-card">
+            <div class="metric-icon">🟡</div>
+            <div class="metric-label">Em Análise</div>
+            <div id="metric-em-analise" class="metric-value">0</div>
+            <div class="metric-details">Aguardando acompanhamento</div>
+          </div>
+
+          <!-- 🔴 Alta prioridade -->
+          <div class="metric-card">
+            <div class="metric-icon">🔴</div>
+            <div class="metric-label">Alta Prioridade</div>
+            <div id="metric-alta-total" class="metric-value">0</div>
+            <div class="metric-details">Requer atenção prioritária</div>
+          </div>
+
+          <!-- 🟢 Resolvidos -->
+          <div class="metric-card">
+            <div class="metric-icon">🟢</div>
+            <div class="metric-label">Resolvidos</div>
+            <div id="metric-resolvidos-total" class="metric-value">0</div>
+            <div class="metric-details">Casos concluídos</div>
+          </div>
+
+          <!-- 💙 Check-ins -->
+          <div class="metric-card">
+            <div class="metric-icon">💙</div>
+            <div class="metric-label">Check-ins</div>
+            <div id="metric-total-checkins" class="metric-value">0</div>
+            <div class="metric-details">Clima emocional agregado</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GRÁFICO: Relatos ao longo do tempo -->
+      <section class="dashboard-section card peace-index-card" aria-labelledby="peace-index-heading">
+        <div><p class="eyebrow">INDICADOR EXPERIMENTAL DO SISTEMA</p><h2 id="peace-index-heading">🕊️ Índice de Paz Escolar</h2><p class="field-hint">Uma referência interna, não uma avaliação científica ou diagnóstico da escola.</p></div>
+        <strong id="peace-index-value" class="peace-index-value">-- / 100</strong><p id="peace-index-trend" class="field-hint">Calculando a partir dos dados disponíveis...</p><details><summary>Como é calculado?</summary><p class="field-hint">Combina, com pesos simples, casos resolvidos, volume recente de ocorrências, sentimentos positivos e participação nas trilhas. Quanto maior o cuidado observado nos dados, maior o indicador.</p></details>
+      </section>
+      <section class="dashboard-section card" aria-labelledby="timeline-heading">
+        <div class="dashboard-section-actions"><button type="button" class="btn btn-outline" id="btn-export-report">📄 Gerar relatório CSV</button></div>
+        <h2 id="timeline-heading">Relatos ao Longo do Tempo</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+          Visualize a evolução dos relatos no período selecionado.
+        </p>
+        <div class="chart-container" id="timeline-chart-container">
+          <div class="chart-loading">
+            <p>Carregando gráfico...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: Casos de Alta Prioridade -->
+      <section class="dashboard-section card" aria-labelledby="priority-heading">
+        <h2 id="priority-heading">🚨 Atenção Necessária</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+          Casos que realmente exigem atenção imediata.
+        </p>
+        <div id="high-priority-list" class="high-priority-list">
+          <div class="empty-state">
+            <p>Nenhum caso de alta prioridade no momento. Ótimo sinal! 🎉</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- GRID: Categoria de Denúncias + Clima Emocional -->
+      <div class="dashboard-grid-2">
+        
+        <!-- Categorias de Denúncias -->
+        <section class="dashboard-section card" aria-labelledby="categories-heading">
+          <h2 id="categories-heading">Principais Tipos de Relatos</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+            Distribuição por categoria.
+          </p>
+          <div class="chart-container" id="categories-chart-container">
+            <div class="chart-loading">
+              <p>Carregando categorias...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Clima Emocional -->
+        <section class="dashboard-section card" aria-labelledby="climate-heading">
+          <h2 id="climate-heading">💙 Como Está a Comunidade?</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+            Distribuição agregada dos sentimentos. Identidades protegidas.
+          </p>
+          
+          <div class="aggregate-chart" id="chart-sentimentos">
+            <!-- Barra: Bem -->
+            <div class="chart-row">
+              <span class="chart-label">😊 Bem</span>
+              <div class="chart-bar-container">
+                <div class="chart-bar-fill" id="bar-Bem" style="background-color: #10b981;"></div>
+              </div>
+              <span class="chart-value" id="val-Bem">0%</span>
+            </div>
+
+            <!-- Barra: Tranquilo -->
+            <div class="chart-row">
+              <span class="chart-label">🙂 Tranquilo(a)</span>
+              <div class="chart-bar-container">
+                <div class="chart-bar-fill" id="bar-Tranquilo" style="background-color: #3b82f6;"></div>
+              </div>
+              <span class="chart-value" id="val-Tranquilo">0%</span>
+            </div>
+
+            <!-- Barra: Normal -->
+            <div class="chart-row">
+              <span class="chart-label">😐 Normal</span>
+              <div class="chart-bar-container">
+                <div class="chart-bar-fill" id="bar-Normal" style="background-color: #64748b;"></div>
+              </div>
+              <span class="chart-value" id="val-Normal">0%</span>
+            </div>
+
+            <!-- Barra: Preocupado -->
+            <div class="chart-row">
+              <span class="chart-label">😟 Preocupado(a)</span>
+              <div class="chart-bar-container">
+                <div class="chart-bar-fill" id="bar-Preocupado" style="background-color: #f59e0b;"></div>
+              </div>
+              <span class="chart-value" id="val-Preocupado">0%</span>
+            </div>
+
+            <!-- Barra: Triste -->
+            <div class="chart-row">
+              <span class="chart-label">😢 Triste</span>
+              <div class="chart-bar-container">
+                <div class="chart-bar-fill" id="bar-Triste" style="background-color: #8b5cf6;"></div>
+              </div>
+              <span class="chart-value" id="val-Triste">0%</span>
+            </div>
+
+            <!-- Barra: Raiva -->
+            <div class="chart-row">
+              <span class="chart-label">😡 Com raiva</span>
+              <div class="chart-bar-container">
+                <div class="chart-bar-fill" id="bar-Raiva" style="background-color: #ef4444;"></div>
+              </div>
+              <span class="chart-value" id="val-Raiva">0%</span>
+            </div>
+          </div>
+          
+          <div class="chart-legend">
+            <strong id="metric-total-checkins-legend">0</strong> check-ins realizados
+          </div>
+        </section>
+      </div>
+
+      <!-- Relatos Recentes -->
+      <section class="dashboard-section card" aria-labelledby="recent-heading">
+        <h2 id="recent-heading">Relatos Recentes</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+          Gerencie os relatos, priorize atendimentos e altere status dos processos.
+        </p>
+        
+        <div class="dashboard-filters" aria-label="Filtros de denúncias">
+          <label class="filter-search"><span class="sr-only">Buscar por código ou palavra-chave</span><input id="denuncia-search" class="form-control" type="search" placeholder="🔎 Buscar por código ou palavra-chave"></label>
+          <label><span class="sr-only">Tipo</span><select id="denuncia-tipo-filter" class="form-control"><option value="">Tipo: Todos</option></select></label>
+          <label><span class="sr-only">Prioridade</span><select id="denuncia-prioridade-filter" class="form-control"><option value="">Prioridade: Todas</option><option>Alta</option><option>Média</option><option>Baixa</option></select></label>
+          <label><span class="sr-only">Status</span><select id="denuncia-status-filter" class="form-control"><option value="">Status: Todos</option><option>Recebida</option><option>Em análise</option><option>Em acompanhamento</option><option>Resolvida</option><option>Concluída</option></select></label>
+          <button type="button" class="btn btn-outline filter-clear" id="clear-denuncia-filters">Limpar filtros</button>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table" aria-label="Relatórios e denúncias recentes">
+            <thead>
+              <tr>
+                <th scope="col">Protocolo</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Data</th>
+                <th scope="col">Prioridade</th>
+                <th scope="col">Status</th>
+                <th scope="col">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-denuncias-body">
+              <!-- Injetado dinamicamente via JS -->
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                  <div class="skeleton-loader"></div>
+                  Carregando relatos...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+      <p>© 2026 Paz na Escola. Painel Administrativo Seguro.</p>
+    </footer>
+  </div>
+
+  <!-- Modal: Alterar Status de Denúncia -->
+  <div id="status-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 id="modal-title">Alterar Status da Denúncia</h2>
+        <button type="button" class="modal-close" aria-label="Fechar" onclick="closeStatusModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <p id="modal-denuncia-codigo" style="color: var(--text-muted); margin-bottom: 16px;"></p>
+        
+        <div class="status-options">
+          <label class="status-option">
+            <input type="radio" name="new-status" value="Aberta"> 
+            <span class="status-label">📖 Aberta</span>
+            <span class="status-description">Relato recebido, ainda não foi analisado.</span>
+          </label>
+          
+          <label class="status-option">
+            <input type="radio" name="new-status" value="Em análise"> 
+            <span class="status-label">🔍 Em Análise</span>
+            <span class="status-description">Gestor está analisando o caso.</span>
+          </label>
+          
+          <label class="status-option">
+            <input type="radio" name="new-status" value="Resolvida"> 
+            <span class="status-label">✓ Resolvida</span>
+            <span class="status-description">Caso foi concluído e encerrado.</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeStatusModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="confirmarAlteracaoStatus()">Confirmar Alteração</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

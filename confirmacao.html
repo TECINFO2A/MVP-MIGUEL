@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Denúncia Enviada — Paz na Escola</title>
+  
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <main role="main" class="success-main">
+      <!-- Card de Sucesso -->
+      <section class="card success-card" aria-labelledby="success-heading">
+        <div class="success-icon" aria-hidden="true">✓</div>
+        <p class="eyebrow">REGISTRO CONCLUÍDO</p>
+        <h1 id="success-heading">Relato enviado</h1>
+        
+        <p class="success-copy">
+          Obrigado por confiar no Paz na Escola. Seu relato foi registrado com segurança e será analisado pela equipe responsável.
+        </p>
+
+        <!-- Código de Protocolo -->
+        <div class="protocol-box">
+          <span>Código de acompanhamento</span>
+          <div id="codigo-protocolo">
+            PE-000000
+          </div>
+          <button type="button" class="copy-button" id="btn-copiar-codigo">📋 Copiar código</button>
+        </div>
+
+        <p class="success-hint">
+          Guarde este código. Ele poderá ser usado para consultar o andamento do relato sem revelar informações sensíveis.
+        </p>
+
+        <div class="success-actions"><a id="link-acompanhar" href="consulta.html" class="btn btn-primary">Acompanhar relato</a><a href="index.html" class="btn btn-outline">Voltar ao início</a></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>© 2026 Paz na Escola. Ambiente seguro.</p>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        const protocolo = document.getElementById('codigo-protocolo');
+        const acompanhar = document.getElementById('link-acompanhar');
+        protocolo.innerText = code;
+        if (acompanhar) acompanhar.href = `consulta.html?code=${encodeURIComponent(code)}`;
+        document.getElementById('btn-copiar-codigo')?.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            document.getElementById('btn-copiar-codigo').textContent = '✓ Código copiado';
+          } catch (error) {
+            window.announceAccessibility('Não foi possível copiar automaticamente. Selecione o código manualmente.');
+          }
+        });
+        if (window.announceAccessibility) {
+          window.announceAccessibility(`Sua denúncia foi enviada. O código gerado é ${code}. Guarde esse código.`);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

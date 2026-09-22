@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acompanhar relato — Paz na Escola</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <a href="index.html" class="btn-back" aria-label="Voltar para a página inicial">← Voltar ao início</a>
+    <header class="page-header" role="banner">
+      <p class="eyebrow">CONSULTA PRIVADA</p>
+      <h1 class="page-title">Acompanhar relato</h1>
+      <p class="page-intro">Informe o código recebido após o envio. Mostraremos apenas o status e as datas do atendimento.</p>
+    </header>
+    <main role="main">
+      <section class="form-card lookup-card" aria-labelledby="lookup-title">
+        <h2 id="lookup-title">Qual é o código do seu relato?</h2>
+        <label for="codigo-consulta" class="form-label">Código de acompanhamento</label>
+        <input id="codigo-consulta" class="form-control protocol-input" type="text" inputmode="text" maxlength="9" placeholder="PE-384721" autocomplete="off">
+        <p id="lookup-error" class="error-message" role="alert" hidden>Informe um código no formato PE-000000.</p>
+        <button type="button" class="btn btn-primary" id="btn-consultar">Consultar status</button>
+      </section>
+      <section id="resultado-consulta" class="form-card tracking-card" aria-live="polite" hidden></section>
+    </main>
+    <footer class="app-footer"><p>© 2026 Paz na Escola. Consulta protegida.</p></footer>
+  </div>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/consulta.js"></script>
+</body>
+</html>

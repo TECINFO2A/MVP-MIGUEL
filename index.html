@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        const stored = localStorage.getItem('paz-na-escola-theme');
+        const theme = stored === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <title>Paz na Escola — Plataforma de Convivência e Segurança</title>
+  <meta name="description" content="Espaço seguro para acolhimento, denúncia anônima e aprendizado sobre a cultura de paz nas escolas.">
+  
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Cabeçalho Principal -->
+    <header role="banner" class="home-header">
+      <p class="eyebrow">UM ESPAÇO PARA CUIDAR</p>
+      <h1 id="main-title" class="title-main">Paz na Escola</h1>
+      <p class="subtitle-main">Segurança, diálogo e cultura de paz.</p>
+      <div class="hero-badges" aria-label="Valores da plataforma">
+        <span>Segurança</span>
+        <span>Escuta</span>
+        <span>Empatia</span>
+      </div>
+    </header>
+
+    <!-- Seção de Boas-Vindas e Acolhimento -->
+    <main role="main">
+      <section class="card welcome-card" aria-labelledby="welcome-heading">
+        <span class="welcome-mark" aria-hidden="true">+</span>
+        <h2 id="welcome-heading">O que você precisa hoje?</h2>
+        <p class="welcome-quote">
+          "Você não precisa enfrentar uma situação difícil sozinho."
+        </p>
+        <p class="welcome-copy">
+          Aqui você pode relatar com segurança o que aconteceu, aprender sobre empatia e compartilhar como está se sentindo hoje.
+        </p>
+      </section>
+
+      <!-- Grade de Ações Principais -->
+      <section aria-label="Ações principais" class="grid-actions">
+        <a href="login.html" class="btn btn-primary action-card" id="btn-denunciar" aria-describedby="desc-denunciar">
+          <span class="action-icon" aria-hidden="true">!</span><span><strong>Fazer uma denúncia</strong><small>Relate uma situação com segurança</small></span>
+        </a>
+        <div id="desc-denunciar" style="display:none;">Abra o formulário para registrar uma ocorrência escolar com total privacidade e apoio.</div>
+
+        <a href="acompanhar-denuncia.html" class="btn btn-secondary action-card" id="btn-acompanhar" aria-describedby="desc-acompanhar">
+          <span class="action-icon" aria-hidden="true">↻</span><span><strong>Acompanhar denúncia</strong><small>Consulte o status do seu caso</small></span>
+        </a>
+        <div id="desc-acompanhar" style="display:none;">Use o código recebido para acompanhar a situação e entender em que etapa ela está.</div>
+
+        <a href="cultura-paz.html" class="btn btn-secondary action-card" id="btn-aprender" aria-describedby="desc-aprender">
+          <span class="action-icon" aria-hidden="true">+</span><span><strong>Conhecer a plataforma</strong><small>Explore empatia e diálogo</small></span>
+        </a>
+        <div id="desc-aprender" style="display:none;">Acesse conteúdos educativos sobre bullying, respeito, empatia e cultura de paz.</div>
+
+        <a href="sentimentos.html" class="btn btn-accent action-card" id="btn-como-estou" aria-describedby="desc-como-estou">
+          <span class="action-icon" aria-hidden="true">~</span><span><strong>Como você está hoje?</strong><small>Registre seu acolhimento emocional</small></span>
+        </a>
+        <div id="desc-como-estou" style="display:none;">Registre seu sentimento do dia e descreva opcionalmente o que está passando.</div>
+      </section>
+
+      <section class="home-section" aria-labelledby="how-heading">
+        <div class="section-heading">
+          <p class="eyebrow">UM CAMINHO DE CUIDADO</p>
+          <h2 id="how-heading">Como o Paz na Escola funciona?</h2>
+        </div>
+        <div class="steps-grid">
+          <article class="step-item"><span>01</span><h3>Identifique</h3><p>Perceba uma situação que precisa de atenção.</p></article>
+          <article class="step-item"><span>02</span><h3>Relate</h3><p>Compartilhe o que aconteceu com privacidade.</p></article>
+          <article class="step-item"><span>03</span><h3>Acompanhe</h3><p>Use seu protocolo para consultar o andamento.</p></article>
+          <article class="step-item"><span>04</span><h3>Transforme</h3><p>Aprenda, dialogue e ajude a construir mudanças.</p></article>
+        </div>
+      </section>
+
+      <section class="impact-panel" aria-labelledby="impact-heading">
+        <div>
+          <p class="eyebrow">POR QUE ISSO IMPORTA</p>
+          <h2 id="impact-heading">Toda escuta pode mudar o clima da escola.</h2>
+        </div>
+        <p>Quando uma comunidade identifica sinais de violência e cria canais confiáveis de comunicação, a escola consegue acolher melhor, agir com responsabilidade e prevenir novos conflitos.</p>
+      </section>
+
+      <!-- Cartão Informativo de Emergência -->
+      <section class="card info-panel" aria-label="Orientações adicionais">
+        <h3>Orientação importante
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+          Este canal foi desenvolvido para ajudar a melhorar o ambiente escolar. Para situações de risco físico imediato ou emergências reais de segurança, por favor procure imediatamente a diretoria da escola ou ligue para os serviços públicos locais (190 Polícia, 193 Bombeiros).
+        </p>
+      </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer" role="contentinfo">
+      <p>© 2026 Paz na Escola. Direitos Reservados.</p>
+      <div class="footer-links">
+        <a href="login.html" id="link-gestor">Entrar ou criar conta</a>
+        <span>•</span>
+        <a href="#" onclick="alert('Esta plataforma respeita sua privacidade. As denúncias são anônimas por padrão e os check-ins são apresentados apenas na forma de dados agregados no painel gestor.')">Privacidade</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts Necessários -->
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

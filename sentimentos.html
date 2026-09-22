@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        const stored = localStorage.getItem('paz-na-escola-theme');
+        const theme = stored === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <title>Como você está hoje? — Check-in de Sentimentos</title>
+  
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <a href="index.html" class="btn-back" aria-label="Voltar para a página inicial">
+      ← Voltar ao Início
+    </a>
+
+    <header role="banner">
+      <h1 class="title-main" style="text-align: left; font-size: 1.8rem; margin-bottom: 8px;">Como você está hoje?</h1>
+      <p style="color: var(--text-muted); margin-bottom: 24px;">Compartilhar como nos sentimos nos ajuda a nos compreender e a cuidar do clima da nossa escola.</p>
+    </header>
+
+    <main role="main">
+      <section class="card" style="border-top: 6px solid var(--primary-light);">
+        <h2 id="sentiment-title" style="font-size: 1.15rem; margin-bottom: 16px; color: var(--primary);">Selecione o emoji que melhor representa o seu estado agora:</h2>
+        
+        <!-- Grid de Sentimentos -->
+        <div class="sentiment-grid" role="radiogroup" aria-labelledby="sentiment-title">
+          <button type="button" class="sentiment-btn" data-feeling="Bem" aria-label="Sentindo-me Bem">
+            <span class="emoji">😊</span>
+            <span>Bem</span>
+          </button>
+          
+          <button type="button" class="sentiment-btn" data-feeling="Tranquilo(a)" aria-label="Sentindo-me Tranquilo ou Tranquila">
+            <span class="emoji">🙂</span>
+            <span>Tranquilo(a)</span>
+          </button>
+          
+          <button type="button" class="sentiment-btn" data-feeling="Normal" aria-label="Sentindo-me Normal">
+            <span class="emoji">😐</span>
+            <span>Normal</span>
+          </button>
+          
+          <button type="button" class="sentiment-btn" data-feeling="Preocupado(a)" aria-label="Sentindo-me Preocupado ou Preocupada">
+            <span class="emoji">😟</span>
+            <span>Preocupado(a)</span>
+          </button>
+          
+          <button type="button" class="sentiment-btn" data-feeling="Triste" aria-label="Sentindo-me Triste">
+            <span class="emoji">😢</span>
+            <span>Triste</span>
+          </button>
+          
+          <button type="button" class="sentiment-btn" data-feeling="Com raiva" aria-label="Sentindo-me Com raiva">
+            <span class="emoji">😡</span>
+            <span>Com raiva</span>
+          </button>
+        </div>
+
+        <!-- Campo Opcional de Detalhes -->
+        <div class="form-group" id="contar-mais-container" style="display: none; animation: fadeIn 0.3s ease;">
+          <label for="descricao-sentimento" class="form-label">Quer contar um pouco mais? (Opcional)</label>
+          <textarea id="descricao-sentimento" class="form-control" placeholder="Escreva o que está motivando esse sentimento, se desejar..."></textarea>
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px;">
+            ⚠️ Suas respostas individuais e descrições não serão exibidas aos gestores de forma nominal. Apenas dados consolidados são visíveis.
+          </span>
+        </div>
+
+        <button type="button" id="btn-salvar-checkin" class="btn btn-primary" style="margin-top: 8px;" disabled>
+          Salvar Registro
+        </button>
+      </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+      <p>© 2026 Paz na Escola. Acolhimento e Privacidade.</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/sentimentos.js"></script>
+</body>
+</html>

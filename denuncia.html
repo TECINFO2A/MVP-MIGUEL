@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fazer Denúncia — Paz na Escola</title>
+  <meta name="description" content="Formulário seguro e anônimo para relatar ocorrências escolares.">
+  
+  <!-- CSS Global -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <a href="index.html" class="btn-back" aria-label="Voltar para a página inicial">
+      ← Voltar ao Início
+    </a>
+
+    <header role="banner" class="page-header">
+      <p class="eyebrow">CANAL DE ESCUTA</p>
+      <h1 class="page-title">Relatar uma situação</h1>
+      <p class="page-intro"><strong>Sua voz é importante.</strong> Explique o que aconteceu para que a escola possa entender e agir.</p>
+      <p class="trust-note"><span aria-hidden="true">🔒</span> Seus dados são tratados com segurança.</p>
+    </header>
+
+    <main role="main">
+      <section class="form-progress" aria-label="Progresso do formulário">
+        <div class="progress-copy"><span id="step-label">Etapa 1 de 4</span><span id="step-name">Categoria</span></div>
+        <div class="progress-track"><span id="progress-fill"></span></div>
+      </section>
+
+      <form id="form-denuncia" novalidate>
+        <section class="form-step active" data-step="1" aria-labelledby="step-category-title">
+          <div class="form-card">
+            <h2 id="step-category-title">O que você gostaria de relatar?</h2>
+            <p class="step-help">Escolha a opção que mais se aproxima da situação.</p>
+            <div class="category-grid" role="radiogroup" aria-labelledby="step-category-title">
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Agressão física"><span aria-hidden="true">🚨</span><strong>Violência física</strong><small>Agressão ou contato físico</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Bullying"><span aria-hidden="true">💬</span><strong>Bullying</strong><small>Ofensas ou exclusão repetida</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Cyberbullying"><span aria-hidden="true">🌐</span><strong>Cyberbullying</strong><small>Violência no ambiente digital</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Ameaça"><span aria-hidden="true">⚠️</span><strong>Ameaça ou intimidação</strong><small>Medo, pressão ou ameaça</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Discriminação"><span aria-hidden="true">🚫</span><strong>Preconceito</strong><small>Discriminação ou intolerância</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Violência verbal"><span aria-hidden="true">💔</span><strong>Assédio</strong><small>Comportamento invasivo ou ofensivo</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Outro"><span aria-hidden="true">🏫</span><strong>Ambiente escolar</strong><small>Problemas no espaço da escola</small></button>
+              <button type="button" role="radio" aria-checked="false" class="category-card" data-category="Outro"><span aria-hidden="true">❓</span><strong>Outro</strong><small>Uma situação diferente</small></button>
+            </div>
+            <select id="tipo-situacao" class="sr-only" required aria-label="Categoria selecionada"><option value=""></option><option value="Agressão física">Violência física</option><option value="Bullying">Bullying</option><option value="Cyberbullying">Cyberbullying</option><option value="Ameaça">Ameaça ou intimidação</option><option value="Discriminação">Preconceito</option><option value="Violência verbal">Assédio</option><option value="Outro">Outro</option></select>
+            <span class="error-message" id="error-tipo" role="alert" hidden>Selecione uma categoria para continuar.</span>
+          </div>
+        </section>
+
+        <section class="form-step" data-step="2" aria-labelledby="step-story-title" hidden>
+          <div class="form-card">
+            <h2 id="step-story-title">O que aconteceu?</h2>
+            <p class="step-help">Conte, do seu jeito. Não se preocupe em escrever de forma perfeita.</p>
+            <div class="voice-input-container">
+              <textarea id="descricao-ocorrencia" class="form-control story-input" maxlength="1000" placeholder="Conte o que aconteceu..." required aria-required="true" aria-describedby="story-counter"></textarea>
+              <button type="button" id="btn-falar" class="btn-voice" title="Gravar relato por voz" aria-label="Falar relato por voz">🎤</button>
+            </div>
+            <div class="field-meta"><span id="story-counter">0 / 1000 caracteres</span><span id="voice-status" role="status"></span></div>
+            <span class="error-message" id="error-descricao" role="alert" hidden>Conte um pouco mais sobre o que aconteceu.</span>
+          </div>
+        </section>
+
+        <section class="form-step" data-step="3" aria-labelledby="step-details-title" hidden>
+          <div class="form-card">
+            <h2 id="step-details-title">Alguns detalhes importantes</h2>
+            <div class="form-group"><label for="local-ocorrencia" class="form-label">Onde aconteceu?</label><select id="local-ocorrencia" class="form-control"><option value="" selected>Selecione o local...</option><option>Sala de aula</option><option>Pátio</option><option>Banheiro</option><option>Corredor</option><option>Quadra</option><option>Refeitório</option><option>Entrada/saída</option><option>Internet/redes sociais</option><option>Outro</option></select></div>
+            <div class="form-group" id="outro-local-container" hidden><label for="outro-local" class="form-label">Qual local?</label><input type="text" id="outro-local" class="form-control" maxlength="80"></div>
+            <div class="form-group"><label for="data-ocorrencia" class="form-label">Quando aconteceu?</label><input type="date" id="data-ocorrencia" class="form-control" required aria-required="true"><span class="error-message" id="error-data" role="alert" hidden>Informe quando aconteceu.</span></div>
+            <fieldset class="form-group"><legend class="form-label">Isso ainda está acontecendo?</legend><div class="radio-group inline"><label class="radio-card"><input type="radio" name="situacao-atual" value="Sim">Sim</label><label class="radio-card"><input type="radio" name="situacao-atual" value="Não" checked>Não</label><label class="radio-card"><input type="radio" name="situacao-atual" value="Não sei">Não sei</label></div><div id="ongoing-note" class="soft-note" hidden>Entendemos. Se você estiver em perigo imediato, procure um adulto de confiança ou os responsáveis pela segurança da escola.</div></fieldset>
+            <fieldset class="form-group"><legend class="form-label">Existe risco imediato à segurança física?</legend><div class="radio-group inline"><label class="radio-card"><input type="radio" name="risco-imediato" value="Não" checked>Não</label><label class="radio-card"><input type="radio" name="risco-imediato" value="Sim">Sim</label></div><div id="box-alerta-risco" class="alert-box" role="alert"><h4>Risco imediato</h4><p>Procure imediatamente um adulto de confiança, a direção da escola ou os serviços de emergência. Este canal não monitora ocorrências em tempo real.</p></div></fieldset>
+            <div class="form-group"><label for="envolvidos" class="form-label">Há outras pessoas envolvidas? <span>(opcional)</span></label><input type="text" id="envolvidos" class="form-control" maxlength="200" placeholder="Você pode informar nomes ou características, se for importante"><small class="field-hint">Não informe dados pessoais desnecessários.</small></div>
+            <div class="form-group"><label for="evidencias" class="form-label">Deseja adicionar alguma evidência? <span>(opcional)</span></label><label class="upload-box" for="evidencias"><span aria-hidden="true">📎</span><strong>Adicionar arquivo</strong><small>JPG, PNG ou PDF até 5 MB</small></label><input id="evidencias" type="file" accept="image/jpeg,image/png,application/pdf" hidden><div id="file-preview" class="file-preview" aria-live="polite"></div><small class="field-hint">O arquivo fica apenas nesta revisão; o banco atual não possui armazenamento de anexos configurado.</small></div>
+            <fieldset class="form-group"><legend class="form-label">Como você deseja enviar este relato?</legend><label class="radio-card identity-card"><input type="checkbox" id="check-anonimo" checked><span><strong>Enviar como anônimo</strong><small>Seu nome não será informado à escola através deste relato.</small></span></label><p class="field-hint">O sistema envia apenas os dados necessários para a análise.</p></fieldset>
+            <div id="identificacao-container" hidden><div class="form-group"><label for="nome-aluno" class="form-label">Seu nome <span>(opcional)</span></label><input type="text" id="nome-aluno" class="form-control" maxlength="100"></div><div class="form-group"><label for="contato-aluno" class="form-label">Contato <span>(opcional)</span></label><input type="text" id="contato-aluno" class="form-control" maxlength="120"></div></div>
+          </div>
+        </section>
+
+        <section class="form-step" data-step="4" aria-labelledby="step-review-title" hidden>
+          <div class="form-card"><h2 id="step-review-title">Confira seu relato</h2><p class="step-help">Revise as informações antes de enviar. Você ainda pode editar.</p><div id="review-content" class="review-content"></div><div class="review-actions"><button type="button" class="btn btn-outline" id="btn-edit-review">← Editar</button><button type="submit" class="btn btn-primary" id="btn-submit-report">🛡️ Enviar relato com segurança</button></div></div>
+        </section>
+
+        <div class="form-navigation"><button type="button" class="btn btn-outline" id="btn-prev-step" hidden>← Voltar</button><button type="button" class="btn btn-primary" id="btn-next-step">Continuar</button></div>
+      </form>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+      <p>© 2026 Paz na Escola. Canal seguro.</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/denuncia-fluxo.js"></script>
+</body>
+</html>
