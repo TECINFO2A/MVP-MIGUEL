@@ -9,18 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('form-redefinir')?.addEventListener('submit', redefinirSenha);
   document.getElementById('toggle-password')?.addEventListener('click', alternarSenha);
   document.querySelectorAll('[data-login-profile]').forEach(button => button.addEventListener('click', () => {
-    document.querySelectorAll('[data-login-profile]').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('[data-login-profile]').forEach(item => {
+      item.classList.remove('active');
+      item.setAttribute('aria-selected', 'false');
+    });
     button.classList.add('active');
+    button.setAttribute('aria-selected', 'true');
     document.getElementById('login-perfil').value = button.dataset.loginProfile;
     document.getElementById('login-heading').textContent = button.dataset.loginProfile === 'gestor' ? 'Acesse o painel administrativo' : 'Acesse seu espaço privado';
     document.getElementById('student-signup-link').hidden = button.dataset.loginProfile === 'gestor';
     document.getElementById('demo-credentials').hidden = button.dataset.loginProfile !== 'gestor';
   }));
+
+  const perfilInicial = new URLSearchParams(window.location.search).get('perfil');
+  if (perfilInicial === 'gestor' || perfilInicial === 'aluno') {
+    document.querySelector(`[data-login-profile="${perfilInicial}"]`)?.click();
+  }
+
+  const rememberIdentifier = localStorage.getItem('paz-na-escola-remembered-login');
+  if (rememberIdentifier) document.getElementById('email').value = rememberIdentifier;
 });
 
 function feedback(id, message, type = 'error') { const element = document.getElementById(id); if (!element) return; element.hidden = false; element.className = `form-feedback ${type}`; element.textContent = message; }
 function setBusy(button, busy, label) { if (button) { button.disabled = busy; button.textContent = busy ? 'Aguarde...' : label; } }
-function alternarSenha() { const input = document.getElementById('password'); const button = document.getElementById('toggle-password'); if (!input) return; input.type = input.type === 'password' ? 'text' : 'password'; button.textContent = input.type === 'password' ? 'Mostrar' : 'Ocultar'; }
+function alternarSenha() {
+  const input = document.getElementById('password');
+  const button = document.getElementById('toggle-password');
+  if (!input || !button) return;
+  const showPassword = input.type === 'password';
+  input.type = showPassword ? 'text' : 'password';
+  button.textContent = showPassword ? 'Ocultar' : 'Mostrar';
+  button.setAttribute('aria-label', showPassword ? 'Ocultar senha' : 'Mostrar senha');
+  button.setAttribute('aria-pressed', String(showPassword));
+}
 
 // Realiza login no Supabase (ou Mock)
 async function realizarLogin(e) {
@@ -31,6 +52,7 @@ async function realizarLogin(e) {
   const perfil = document.getElementById('login-perfil')?.value || 'aluno';
   if (!email) return feedback('login-feedback', 'Informe seu e-mail ou matrícula.');
   if (!password) return feedback('login-feedback', 'Digite sua senha.');
+  document.getElementById('login-feedback').hidden = true;
   const button = document.getElementById('btn-login');
   setBusy(button, true, 'Entrar');
 
@@ -46,6 +68,11 @@ async function realizarLogin(e) {
       const userPerfil = data.user?.user_metadata?.perfil || (email === 'admin@escola.com' ? 'gestor' : 'aluno');
       if (perfil === 'gestor' && userPerfil !== 'gestor') throw new Error('Esta conta não possui acesso administrativo.');
       if (perfil === 'aluno' && userPerfil === 'gestor') throw new Error('Use a entrada da área administrativa.');
+      if (document.getElementById('remember-me')?.checked) {
+        localStorage.setItem('paz-na-escola-remembered-login', email);
+      } else {
+        localStorage.removeItem('paz-na-escola-remembered-login');
+      }
       window.location.href = userPerfil === 'gestor' ? 'dashboard.html' : 'aluno-dashboard.html';
     }
   } catch (err) {

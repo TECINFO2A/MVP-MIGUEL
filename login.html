@@ -31,7 +31,10 @@
 
     <main role="main">
       <section class="card login-card">
-        <div class="login-switch" role="tablist" aria-label="Tipo de acesso"><button type="button" class="active" data-login-profile="aluno">Aluno</button><button type="button" data-login-profile="gestor">Gestor</button></div>
+        <div class="login-switch" role="tablist" aria-label="Tipo de acesso">
+          <button type="button" class="active" role="tab" aria-selected="true" data-login-profile="aluno">Aluno</button>
+          <button type="button" role="tab" aria-selected="false" data-login-profile="gestor">Gestor</button>
+        </div>
         <input type="hidden" id="login-perfil" value="aluno">
         <h2 id="login-heading" class="login-heading">Acesse seu espaço privado</h2>
         <div id="login-feedback" class="form-feedback" role="alert" hidden></div>
@@ -46,7 +49,10 @@
           <!-- Campo Senha -->
           <div class="form-group">
             <label for="password" class="form-label">Senha</label>
-            <div class="password-field"><input type="password" id="password" class="form-control" placeholder="Digite sua senha..." required aria-required="true" autocomplete="current-password"><button type="button" id="toggle-password" class="password-toggle">Mostrar</button></div>
+            <div class="password-field">
+              <input type="password" id="password" class="form-control" placeholder="Digite sua senha..." required aria-required="true" autocomplete="current-password" aria-describedby="password-hint">
+              <button type="button" id="toggle-password" class="password-toggle" aria-label="Mostrar senha" aria-controls="password" aria-pressed="false">Mostrar</button>
+            </div>
           </div>
 
           <div class="login-options"><label><input type="checkbox" id="remember-me"> Lembrar de mim</label><a href="recuperar-senha.html">Esqueci minha senha</a></div>
@@ -56,7 +62,7 @@
         </form>
 
         <!-- Informações de Teste (MVP) -->
-        <div id="demo-credentials" class="demo-credentials">
+        <div id="demo-credentials" class="demo-credentials" hidden>
           <p class="demo-title">Acesso de demonstração do gestor:</p>
           <p>E-mail: <strong>admin@escola.com</strong></p>
           <p>Senha: <strong>paz123</strong></p>

@@ -240,7 +240,7 @@ class MockSupabaseClient {
       signInWithPassword({ email, password }) {
         if (email === 'admin@escola.com' && password === 'paz123') {
           const session = {
-            user: { id: 'u-gestor', email: 'admin@escola.com', user_metadata: { nome: 'Diretor Geral' } },
+            user: { id: 'u-gestor', email: 'admin@escola.com', user_metadata: { nome: 'Diretor Geral', perfil: 'gestor' } },
             access_token: 'mock-token'
           };
           localStorage.setItem(DB_PREFIX + 'session', JSON.stringify(session));
@@ -248,7 +248,43 @@ class MockSupabaseClient {
           if (self.authListener) self.authListener('SIGNED_IN', session);
           return Promise.resolve({ data: { user: session.user, session }, error: null });
         }
+        const users = JSON.parse(localStorage.getItem(DB_PREFIX + 'usuarios') || '[]');
+        const user = users.find(item =>
+          item.senha === password &&
+          (item.email.toLowerCase() === email.toLowerCase() || item.matricula === email)
+        );
+        if (user) {
+          const session = {
+            user: { id: user.id, email: user.email, user_metadata: { ...user, perfil: 'aluno', senha: undefined } },
+            access_token: 'mock-token'
+          };
+          localStorage.setItem(DB_PREFIX + 'session', JSON.stringify(session));
+          if (self.authListener) self.authListener('SIGNED_IN', session);
+          return Promise.resolve({ data: { user: session.user, session }, error: null });
+        }
         return Promise.resolve({ data: null, error: { message: 'Credenciais inválidas de simulação (Use: admin@escola.com / paz123)' } });
+      },
+
+      signUp({ email, password, options }) {
+        const users = JSON.parse(localStorage.getItem(DB_PREFIX + 'usuarios') || '[]');
+        const metadata = options?.data || {};
+        const matricula = String(metadata.matricula || '').trim();
+        if (users.some(item => item.email.toLowerCase() === email.toLowerCase())) {
+          return Promise.resolve({ data: null, error: { message: 'Este e-mail já está cadastrado.' } });
+        }
+        if (matricula && users.some(item => item.matricula === matricula)) {
+          return Promise.resolve({ data: null, error: { message: 'Essa matrícula já está cadastrada.' } });
+        }
+        const user = { id: 'u-aluno-' + Date.now(), email, senha: password, ...metadata };
+        users.push(user);
+        localStorage.setItem(DB_PREFIX + 'usuarios', JSON.stringify(users));
+        const session = {
+          user: { id: user.id, email: user.email, user_metadata: { ...metadata, perfil: 'aluno' } },
+          access_token: 'mock-token'
+        };
+        localStorage.setItem(DB_PREFIX + 'session', JSON.stringify(session));
+        if (self.authListener) self.authListener('SIGNED_IN', session);
+        return Promise.resolve({ data: { user: session.user, session }, error: null });
       },
 
       signOut() {
